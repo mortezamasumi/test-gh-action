@@ -1,21 +1,20 @@
-name: Simple Manual Release
+name: Auto Release on Push to Main
 
 on:
-    workflow_dispatch:
-        inputs:
-            release_version:
-                description: "Release version (e.g. 1.0.0)"
-                required: true
+    push:
+        branches:
+            - main
 
 permissions:
     contents: write
+    pull-requests: write
 
 jobs:
     release:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout repository
+            - name: Checkout code
               uses: actions/checkout@v4
 
             - name: Set up Git
@@ -23,25 +22,21 @@ jobs:
                   git config user.name "github-actions"
                   git config user.email "github-actions@github.com"
 
-            - name: Update composer.json version
+            - name: Extract version from composer.json
+              id: version
               run: |
-                  jq '.version = "${{ github.event.inputs.release_version }}"' composer.json > tmp.$$.json
-                  mv tmp.$$.json composer.json
+                  version=$(jq -r .version composer.json)
+                  echo "Version is: $version"
+                  echo "version=$version" >> $GITHUB_OUTPUT
 
-            - name: Commit version bump
+            - name: Tag and push
               run: |
-                  git add composer.json
-                  git commit -m "chore: release v${{ github.event.inputs.release_version }}"
-                  git push origin HEAD
-
-            - name: Tag release
-              run: |
-                  git tag v${{ github.event.inputs.release_version }}
-                  git push origin v${{ github.event.inputs.release_version }}
+                  git tag v${{ steps.version.outputs.version }}
+                  git push origin v${{ steps.version.outputs.version }}
 
             - name: Create GitHub Release
               uses: softprops/action-gh-release@v1
               with:
-                  tag_name: v${{ github.event.inputs.release_version }}
+                  tag_name: v${{ steps.version.outputs.version }}
               env:
                   GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
