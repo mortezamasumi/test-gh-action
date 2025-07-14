@@ -1,0 +1,21 @@
+name: Auto Merge Release PR
+
+on:
+    pull_request:
+        types:
+            - opened
+            - labeled
+            - ready_for_review
+            - synchronize
+jobs:
+    automerge:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Auto merge release PR
+              uses: pascalgn/automerge-action@v0.15.6
+              env:
+                  GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+              with:
+                  merge-method: merge
+                  commit-message: pull-request-title
+                  merge-labels: ""
