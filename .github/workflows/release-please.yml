@@ -23,8 +23,8 @@ jobs:
             - name: Enable Auto-Merge
               if: ${{ steps.release.outputs.pr }}
               run: gh pr merge --auto --squash "${{ steps.release.outputs.pr }}"
-              env:
-                  GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+              # env:
+              #     GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
 
         # steps:
         #     - name: Release Please
