@@ -2,7 +2,7 @@
     "name": "mortezamasumi/copy-db",
     "description": "copy db tables",
     "type": "library",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "license": "MIT",
     "authors": [
         {
