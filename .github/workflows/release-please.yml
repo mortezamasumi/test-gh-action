@@ -1,4 +1,4 @@
-name: Manual Release + Merge
+name: Release Please
 
 on:
     push:
@@ -8,54 +8,15 @@ on:
 permissions:
     contents: write
     pull-requests: write
+    issues: write
 
 jobs:
     release:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-
-            - name: Run Release Please
+            - uses: googleapis/release-please-action@v4
               id: release
-              uses: google-github-actions/release-please-action@v4
               with:
                   release-type: php
-              env:
-                  GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-
-            - name: Find open release PR
-              id: find_pr
-              run: |
-                  max_attempts=5
-                  delay_seconds=10
-                  pr_number=""
-
-                  for ((i=1; i<=$max_attempts; i++)); do
-                      echo "Attempt $i: Checking for release PR..."
-                      pr_number=$(gh pr list --state open --author "release-please[bot]" --json number --jq '.[0].number // empty')
-                      
-                      if [ -n "$pr_number" ]; then
-                          echo "Found PR: $pr_number"
-                          echo "pr_number=$pr_number" >> $GITHUB_OUTPUT
-                          exit 0
-                      fi
-
-                      if [ $i -lt $max_attempts ]; then
-                          echo "PR not found. Retrying in $delay_seconds seconds..."
-                          sleep $delay_seconds
-                      fi
-                  done
-
-                  echo "No release PR found after $max_attempts attempts."
-                  exit 1  # Fail the step if PR never appears
-              env:
-                  GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-
-            - name: Merge release PR
-              if: ${{ steps.find_pr.outputs.pr_number != '' }}
-              run: |
-                  gh pr merge ${{ steps.find_pr.outputs.pr_number }} --squash --admin --delete-branch --body "Automated release"
-              env:
-                  GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+                  token: "${{ secrets.RELEASE_TOKEN }}"
