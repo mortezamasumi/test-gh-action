@@ -20,13 +20,17 @@ jobs:
                   release-type: php
                   token: "${{ secrets.RELEASE_TOKEN }}"
 
-            - name: Enable Auto Merge
-              if: ${{ steps.release.outputs.pull-request-number }}
-              uses: peter-evans/enable-pull-request-automerge@v3
-              with:
-                  token: ${{ secrets.RELEASE_TOKEN }}
-                  pull-request-number: ${{ steps.release.outputs.pull-request-number }}
-                  merge-method: squash
+            - name: Enable Auto Merge (if PR created)
+              if: always() # ensures this runs even if release didn't create PR
+              run: |
+                  echo "PR NUMBER: ${{ steps.release.outputs.pull-request-number }}"
+                  if [ -n "${{ steps.release.outputs.pull-request-number }}" ]; then
+                    gh pr merge ${{ steps.release.outputs.pull-request-number }} --squash --auto
+                  else
+                    echo "No release PR created — skipping auto-merge."
+                  fi
+              env:
+                  GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
 
         # steps:
         #     - name: Release Please
