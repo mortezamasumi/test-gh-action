@@ -8,16 +8,13 @@ on:
 permissions:
     contents: write
     pull-requests: write
-    issues: write
 
 jobs:
     release:
         runs-on: ubuntu-latest
-
         steps:
             - name: Release Please
               uses: googleapis/release-please-action@v4
               with:
                   release-type: php
-              env:
-                  GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+                  token: "${{ secrets.RELEASE_TOKEN }}"
