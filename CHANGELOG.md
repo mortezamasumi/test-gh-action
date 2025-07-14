@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/mortezamasumi/test-gh-action/compare/v1.0.3...v1.0.4) (2025-07-14)
+
+
+### Bug Fixes
+
+* use auto-merge ([eb74f8c](https://github.com/mortezamasumi/test-gh-action/commit/eb74f8cf558c3cdbf1a505db804013f134393d9d))
+
 ## [1.0.3](https://github.com/mortezamasumi/test-gh-action/compare/v1.0.2...v1.0.3) (2025-07-14)
 
 
