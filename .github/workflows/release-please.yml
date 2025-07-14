@@ -12,9 +12,28 @@ permissions:
 jobs:
     release:
         runs-on: ubuntu-latest
+
         steps:
-            - name: Release Please
-              uses: googleapis/release-please-action@v4
+            - uses: googleapis/release-please-action@v4
+              id: release
               with:
                   release-type: php
                   token: "${{ secrets.RELEASE_TOKEN }}"
+
+            - name: Enable Auto-Merge
+              if: ${{ steps.release.outputs.pr }}
+              run: gh pr merge --auto --squash "${{ steps.release.outputs.pr }}"
+              env:
+                  GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+
+        # steps:
+        #     - name: Release Please
+        #       uses: googleapis/release-please-action@v4
+        #       with:
+        #           release-type: php
+        #           token: "${{ secrets.RELEASE_TOKEN }}"
+        #     - name: Enable Auto-Merge
+        #           if: ${{ steps.release.outputs.pr }}
+        #           run: gh pr merge --auto --squash "${{ steps.release.outputs.pr }}"
+        #           env:
+        #             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
