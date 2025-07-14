@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.10](https://github.com/mortezamasumi/test-gh-action/compare/v1.0.9...v1.0.10) (2025-07-14)
+
+
+### Bug Fixes
+
+* test merge 2 ([48a8279](https://github.com/mortezamasumi/test-gh-action/commit/48a82791c09204906e80a930c4a10b38f0136cda))
+
 ## [1.0.9](https://github.com/mortezamasumi/test-gh-action/compare/v1.0.8...v1.0.9) (2025-07-14)
 
 
