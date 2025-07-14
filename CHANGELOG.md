@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.13](https://github.com/mortezamasumi/test-gh-action/compare/v1.0.12...v1.0.13) (2025-07-14)
+
+
+### Bug Fixes
+
+* test merge 2 ([917234c](https://github.com/mortezamasumi/test-gh-action/commit/917234c1bfca3a62201739bc72a8c0fc0c7b01d0))
+* test merge 3 ([ab8eb22](https://github.com/mortezamasumi/test-gh-action/commit/ab8eb2252549a868790cad53f96567e54652c863))
+* test merge 3 ([ac59c48](https://github.com/mortezamasumi/test-gh-action/commit/ac59c482632ca910f22dd217f8eb4da75c65b66d))
+* test merge 3 ([5fbf277](https://github.com/mortezamasumi/test-gh-action/commit/5fbf27701ff1421e38cc44ed353278d393b74ec5))
+* test merge 3 ([1764332](https://github.com/mortezamasumi/test-gh-action/commit/1764332134fc01a446623f7aeff7c28bafad4c57))
+* test merge 4 ([d778838](https://github.com/mortezamasumi/test-gh-action/commit/d7788381f019bc4a3475631749c07ede9fdb125d))
+
 ## [1.0.12](https://github.com/mortezamasumi/test-gh-action/compare/v1.0.11...v1.0.12) (2025-07-14)
 
 
