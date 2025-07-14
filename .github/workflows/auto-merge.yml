@@ -10,7 +10,7 @@ on:
 
 jobs:
     automerge:
-        if: github.actor == 'release-please[bot]'
+        # if: github.actor == 'release-please[bot]'
         runs-on: ubuntu-latest
         steps:
             - name: Auto merge release PR
