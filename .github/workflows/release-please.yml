@@ -16,7 +16,7 @@ jobs:
 
         steps:
             - name: Release Please
-              uses: googleapis/release-please-action
+              uses: googleapis/release-please-action@v4
               with:
                   release-type: php
               env:
