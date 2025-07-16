@@ -1,0 +1,30 @@
+name: Release
+on:
+    push:
+        tags:
+            - "v*" # Runs when a new 'vX.X.X' tag is pushed
+jobs:
+    build-and-release:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "8.2"
+
+            - name: Install dependencies
+              run: composer install --no-dev --prefer-dist
+
+            - name: Create Release
+              uses: softprops/action-gh-release@v1
+              with:
+                  name: ${{ github.ref_name }}
+                  body: |
+                      ## Changelog
+                      - New feature X
+                      - Bugfix Y
+                  draft: false
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
