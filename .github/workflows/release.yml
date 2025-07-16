@@ -1,3 +1,8 @@
+# semantic-release:
+# fix:  patch
+# feat:  minor
+# BREAKING CHANGE: major
+
 name: Release
 
 on:
