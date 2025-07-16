@@ -33,6 +33,7 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: npx semantic-release
+            - run: echo ${{ steps.semantic-release.outputs }}
             - name: Create GitHub Release
               if: success()
               uses: softprops/action-gh-release@v1
