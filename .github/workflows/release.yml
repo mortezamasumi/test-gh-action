@@ -35,6 +35,10 @@ jobs:
               id: semantic-release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Debug Output
+              if: always()
+              run: |
+                  echo "Semantic Release Tag: ${{ steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG }}"
             - name: Update composer.json version
               if: steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG != ''
               run: |
