@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/mortezamasumi/test-gh-action/compare/v1.2.0...v1.3.0) (2025-07-16)
+
+
+### Features
+
+* just for fun BREAKING CHANGE: new ([0e89620](https://github.com/mortezamasumi/test-gh-action/commit/0e89620dbc8744ea4a4fb159fb568321822c9cca))
+
 # [1.2.0](https://github.com/mortezamasumi/test-gh-action/compare/v1.1.7...v1.2.0) (2025-07-16)
 
 
