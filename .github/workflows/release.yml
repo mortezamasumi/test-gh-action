@@ -19,13 +19,13 @@ jobs:
             - name: Create minimal package.json if not exists
               run: |
                   if [ ! -f package.json ]; then
-                    cat > package.json << 'EOF'
-                    {
-                      "name": "semantic-release",
-                      "version": "0.0.1",
-                      "private": true
-                    }
-                    EOF
+                  cat > package.json << 'EOF'
+                  {
+                    "name": "semantic-release",
+                    "version": "0.0.1",
+                    "private": true
+                  }
+                  EOF
                   fi
             - name: Install dependencies
               run: npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github
