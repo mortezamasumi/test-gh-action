@@ -37,8 +37,10 @@ jobs:
               if: success()
               uses: softprops/action-gh-release@v1
               with:
-                  tag_name: ${{ env.SEMANTIC_RELEASE_TAG }}
-                  name: Release ${{ env.SEMANTIC_RELEASE_TAG }}
+                  name: Release ${{ github.ref_name }}
+                  tag_name: ${{ github.ref_name }}
+                  # name: Release ${{ env.SEMANTIC_RELEASE_TAG }}
+                  # tag_name: ${{ env.SEMANTIC_RELEASE_TAG }}
                   draft: false
                   prerelease: false
               env:
