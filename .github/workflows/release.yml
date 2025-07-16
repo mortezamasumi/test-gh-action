@@ -34,15 +34,15 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: npx semantic-release
             - run: echo ${{ steps.semantic-release.outputs }}
-            - name: Create GitHub Release
-              if: success()
-              uses: softprops/action-gh-release@v1
-              with:
-                  name: Release ${{ github.ref_name }}
-                  tag_name: ${{ github.ref_name }}
-                  # name: Release ${{ env.SEMANTIC_RELEASE_TAG }}
-                  # tag_name: ${{ env.SEMANTIC_RELEASE_TAG }}
-                  draft: false
-                  prerelease: false
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            # - name: Create GitHub Release
+            #   if: success()
+            #   uses: softprops/action-gh-release@v1
+            #   with:
+            #       name: Release ${{ github.ref_name }}
+            #       tag_name: ${{ github.ref_name }}
+            #       # name: Release ${{ env.SEMANTIC_RELEASE_TAG }}
+            #       # tag_name: ${{ env.SEMANTIC_RELEASE_TAG }}
+            #       draft: false
+            #       prerelease: false
+            #   env:
+            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
