@@ -95,6 +95,15 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
               run: npx semantic-release
+            - name: Update composer.json version
+              if: steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG != ''
+              run: |
+                  VERSION=${{ steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG }}
+                  VERSION=${VERSION#v} # Remove 'v' prefix
+                  jq --arg version "$VERSION" '.version = $version' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
+                  git add composer.json
+                  git commit -m "chore(release): update composer.json to $VERSION [skip ci]" || echo "No changes to commit"
+                  git push
             - name: Debug Output
               if: always()
               run: |
