@@ -27,13 +27,36 @@ jobs:
                   }
                   EOF
                   fi
+            - name: Install jq
+              run: sudo apt-get update && sudo apt-get install -y jq
+            - name: Append release block to package.json
+              run: |
+                  jq '. + {
+                    "release": {
+                      "branches": ["main"],
+                      "tagFormat": "v${version}",
+                      "plugins": [
+                        "@semantic-release/commit-analyzer",
+                        "@semantic-release/release-notes-generator",
+                        ["@semantic-release/npm", { "npmPublish": false }],
+                        ["@semantic-release/git", {
+                          "assets": ["package.json"],
+                          "message": "chore(release): v${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+                        }],
+                        ["@semantic-release/exec", {
+                          "publishCmd": "echo SEMANTIC_RELEASE_TAG=v${nextRelease.version} >> $GITHUB_OUTPUT"
+                        }],
+                        "@semantic-release/github"
+                      ]
+                    }
+                  }' package.json > package.json.tmp && mv package.json.tmp package.json
             - name: Install dependencies
-              run: npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github
+              run: npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/exec
             - name: Semantic Release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: npx semantic-release
-            - run: echo ${{ steps.semantic-release.outputs }}
+            - run: echo ${{ steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG }}
             # - name: Create GitHub Release
             #   if: success()
             #   uses: softprops/action-gh-release@v1
