@@ -3,19 +3,32 @@ on:
     push:
         branches:
             - main
+
 jobs:
-    build-and-release:
+    release:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-node@v4
+            - name: Checkout code
+              uses: actions/checkout@v4
               with:
-                  node-version: 20
-            - run: npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github
-            - run: semantic-release
+                  fetch-depth: 0 # Required for semantic-release to analyze commit history
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+            - name: Install dependencies
+              run: npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github
+            - name: Semantic Release
               env:
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-# - name: Release
-#   uses: softprops/action-gh-release@v2
-#   with:
-#       token: ${{ secrets.GH_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: npx semantic-release
+            - name: Create GitHub Release
+              if: success() # Run only if semantic-release succeeds
+              uses: softprops/action-gh-release@v1
+              with:
+                  tag_name: ${{ env.SEMANTIC_RELEASE_TAG }} # Set by semantic-release
+                  name: Release ${{ env.SEMANTIC_RELEASE_TAG }}
+                  draft: false
+                  prerelease: false
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
