@@ -63,6 +63,13 @@ jobs:
                       ]
                     }
                   }' package.json > package.json.tmp && mv package.json.tmp package.json
+            - name: Ensure composer.json version field
+              run: |
+                  if [ ! -f composer.json ]; then
+                    echo '{"name": "test-gh-action", "version": "0.0.0"}' > composer.json
+                  else
+                    jq 'if has("version") then . else . + {"version": "0.0.0"} end' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
+                  fi
             - name: Install dependencies
               run: npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/exec
             - name: Debug References
@@ -73,6 +80,8 @@ jobs:
                   echo "GitHub Ref: ${{ github.ref }}"
                   echo "GitHub Ref Name: ${{ github.ref_name }}"
                   cat package.json
+                  echo "composer.json contents:"
+                  cat composer.json
             - name: Semantic Release
               id: semantic-release
               env:
