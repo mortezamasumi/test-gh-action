@@ -11,11 +11,16 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
               with:
-                  fetch-depth: 0 # Required for semantic-release to analyze commit history
+                  fetch-depth: 0
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: "20"
+            - name: Create minimal package.json if not exists
+              run: |
+                  if [ ! -f package.json ]; then
+                    echo '{}' > package.json
+                  fi
             - name: Install dependencies
               run: npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github
             - name: Semantic Release
@@ -23,10 +28,10 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: npx semantic-release
             - name: Create GitHub Release
-              if: success() # Run only if semantic-release succeeds
+              if: success()
               uses: softprops/action-gh-release@v1
               with:
-                  tag_name: ${{ env.SEMANTIC_RELEASE_TAG }} # Set by semantic-release
+                  tag_name: ${{ env.SEMANTIC_RELEASE_TAG }}
                   name: Release ${{ env.SEMANTIC_RELEASE_TAG }}
                   draft: false
                   prerelease: false
