@@ -29,7 +29,7 @@ jobs:
               run: npx semantic-release
               id: semantic-release
               env:
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             - name: Update composer.json version
               if: steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG != ''
               run: |
@@ -48,7 +48,7 @@ jobs:
                   draft: false
                   prerelease: false
               env:
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     # - name: Create minimal package.json if not exists
     #   run: |
@@ -86,6 +86,7 @@ jobs:
     #           ]
     #         }
     #       }' package.json > package.json.tmp && mv package.json.tmp package.json
+
     # - name: Ensure composer.json version field
     #   run: |
     #       if [ ! -f composer.json ]; then
