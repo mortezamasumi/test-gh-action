@@ -1,7 +1,7 @@
 name: Release
 on:
     workflow_run:
-        workflows: ["run-tests"] # Name of the workflow you depend on
+        workflows: ["run-tests"]
         types:
             - completed
 
@@ -13,7 +13,7 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
               with:
-                  fetch-depth: 0 # Required for semantic-release to analyze commit history
+                  fetch-depth: 0
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
@@ -42,7 +42,7 @@ jobs:
                   git fetch origin
                   if git tag -l | grep -q '^main$'; then
                     git tag -d main
-                    git push https://x-access-token:${GITHUB_TOKEN}@github.com/mortezamasumi/test-gh-action.git :refs/tags/main
+                    git push origin :refs/tags/main
                   fi
             - name: Append release block to package.json
               run: |
@@ -77,21 +77,6 @@ jobs:
                   fi
             - name: Ensure semantic-release dependencies
               run: npm install --save-dev @semantic-release/commit-analyzer@^13.0.0 @semantic-release/git@^10.0.0 @semantic-release/github@^10.0.0 @semantic-release/npm@^12.0.0 @semantic-release/release-notes-generator@^14.0.0 @semantic-release/exec@^6.0.0 @semantic-release/changelog@^6.0.0 semantic-release@^24.0.0
-            - name: Install dependencies
-              run: npm ci
-            - name: Debug Files and References
-              run: |
-                  git branch -a
-                  git tag -l
-                  git remote -v
-                  echo "GitHub Ref: ${{ github.ref }}"
-                  echo "GitHub Ref Name: ${{ github.ref_name }}"
-                  echo "package.json contents:"
-                  cat package.json
-                  echo "composer.json contents:"
-                  cat composer.json
-                  echo "CHANGELOG.md contents (if exists):"
-                  cat CHANGELOG.md || echo "CHANGELOG.md not found"
             - name: Semantic Release
               id: semantic-release
               env:
@@ -106,17 +91,6 @@ jobs:
                   git add composer.json
                   git commit -m "chore(release): update composer.json to $VERSION [skip ci]" || echo "No changes to commit"
                   git push
-            - name: Debug Output
-              if: always()
-              run: |
-                  echo "Semantic Release Tag: ${{ steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG }}"
-                  git tag -l
-                  echo "package.json after semantic-release:"
-                  cat package.json
-                  echo "composer.json after semantic-release:"
-                  cat composer.json
-                  echo "CHANGELOG.md after semantic-release:"
-                  cat CHANGELOG.md || echo "CHANGELOG.md not found"
             - name: Create GitHub Release
               if: steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG != ''
               uses: softprops/action-gh-release@v1
@@ -127,110 +101,32 @@ jobs:
                   prerelease: false
               env:
                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
-# name: Release
-# on:
-#     push:
-#         branches:
-#             - main
 
-# jobs:
-#     release:
-#         runs-on: ubuntu-latest
-#         steps:
-#             - name: Checkout code
-#               uses: actions/checkout@v4
-#               with:
-#                   fetch-depth: 0
-#             - name: Setup Node.js
-#               uses: actions/setup-node@v4
-#               with:
-#                   node-version: "20"
-#             - name: Create minimal package.json if not exists
-#               run: |
-#                   if [ ! -f package.json ]; then
-#                   cat > package.json << 'EOF'
-#                   {
-#                     "name": "semantic-release",
-#                     "version": "0.0.1",
-#                     "private": true
-#                   }
-#                   EOF
-#                   fi
-#             - name: Install jq
-#               run: sudo apt-get update && sudo apt-get install -y jq
-#             - name: Configure Git
-#               run: |
-#                   git config user.name "GitHub Actions"
-#                   git config user.email "actions@github.com"
-#             - name: Delete main tag if exists
-#               env:
-#                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
-#               run: |
-#                   git fetch origin
-#                   if git tag -l | grep -q '^main$'; then
-#                     git tag -d main
-#                     git push https://x-access-token:${GITHUB_TOKEN}@github.com/mortezamasumi/test-gh-action.git :refs/tags/main
-#                   fi
-#             - name: Append release block to package.json
-#               run: |
-#                   jq '. + {
-#                     "release": {
-#                       "branches": ["main"],
-#                       "tagFormat": "v${version}",
-#                       "plugins": [
-#                         "@semantic-release/commit-analyzer",
-#                         "@semantic-release/release-notes-generator",
-#                         ["@semantic-release/changelog", {
-#                           "changelogFile": "CHANGELOG.md"
-#                         }],
-#                         ["@semantic-release/npm", { "npmPublish": false }],
-#                         ["@semantic-release/git", {
-#                           "assets": ["package.json"],
-#                           "message": "chore(release): v${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
-#                         }],
-#                         ["@semantic-release/exec", {
-#                           "publishCmd": "echo SEMANTIC_RELEASE_TAG=v${nextRelease.version} >> $GITHUB_OUTPUT"
-#                         }],
-#                         "@semantic-release/github"
-#                       ]
-#                     }
-#                   }' package.json > package.json.tmp && mv package.json.tmp package.json
-#             - name: Ensure composer.json version field
-#               run: |
-#                   if [ ! -f composer.json ]; then
-#                     echo '{"name": "test-gh-action", "version": "0.0.0"}' > composer.json
-#                   else
-#                     jq 'if has("version") then . else . + {"version": "0.0.0"} end' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
-#                   fi
-#             - name: Install dependencies
-#               run: npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/github @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/exec
-#             - name: Debug References
-#               run: |
-#                   git branch -a
-#                   git tag -l
-#                   git remote -v
-#                   echo "GitHub Ref: ${{ github.ref }}"
-#                   echo "GitHub Ref Name: ${{ github.ref_name }}"
-#                   cat package.json
-#                   echo "composer.json contents:"
-#                   cat composer.json
-#             - name: Semantic Release
-#               id: semantic-release
-#               env:
-#                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
-#               run: npx semantic-release
-#             - name: Debug Output
-#               if: always()
-#               run: |
-#                   echo "Semantic Release Tag: ${{ steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG }}"
-#                   git tag -l
-#             - name: Create GitHub Release
-#               if: steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG != ''
-#               uses: softprops/action-gh-release@v1
-#               with:
-#                   name: Release ${{ steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG }}
-#                   tag_name: ${{ steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG }}
-#                   draft: false
-#                   prerelease: false
-#               env:
-#                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+            #  - name: Install dependencies
+            #   run: npm ci
+
+            # - name: Debug Files and References
+            #   run: |
+            #       git branch -a
+            #       git tag -l
+            #       git remote -v
+            #       echo "GitHub Ref: ${{ github.ref }}"
+            #       echo "GitHub Ref Name: ${{ github.ref_name }}"
+            #       echo "package.json contents:"
+            #       cat package.json
+            #       echo "composer.json contents:"
+            #       cat composer.json
+            #       echo "CHANGELOG.md contents (if exists):"
+            #       cat CHANGELOG.md || echo "CHANGELOG.md not found"
+
+            # - name: Debug Output
+            #   if: always()
+            #   run: |
+            #       echo "Semantic Release Tag: ${{ steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG }}"
+            #       git tag -l
+            #       echo "package.json after semantic-release:"
+            #       cat package.json
+            #       echo "composer.json after semantic-release:"
+            #       cat composer.json
+            #       echo "CHANGELOG.md after semantic-release:"
+            #       cat CHANGELOG.md || echo "CHANGELOG.md not found"
