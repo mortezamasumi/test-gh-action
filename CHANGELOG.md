@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/mortezamasumi/test-gh-action/compare/v1.1.7...v1.2.0) (2025-07-16)
+
+
+### Features
+
+* just for fun ([ff5b699](https://github.com/mortezamasumi/test-gh-action/commit/ff5b699457e463c95d9df81b222236492c72389a))
+
 ## [1.1.7](https://github.com/mortezamasumi/test-gh-action/compare/v1.1.6...v1.1.7) (2025-07-16)
 
 
