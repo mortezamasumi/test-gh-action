@@ -15,8 +15,7 @@ jobs:
             - run: semantic-release
               env:
                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
-            # - name: Release
-            #   uses: softprops/action-gh-release@v2
-            #   with:
-            #       token: ${{ secrets.GH_TOKEN }}
+# - name: Release
+#   uses: softprops/action-gh-release@v2
+#   with:
+#       token: ${{ secrets.GH_TOKEN }}
