@@ -61,10 +61,8 @@ jobs:
                   minor=$((minor + 0))
                   patch=$((patch + 0))
 
-
-
                   # Increment the version based on the type
-                  case "$VERSION_TYPE" in
+                  case "${{env.VERSION_TYPE}}" in
                     major) new_version="v$((major + 1)).0.0" ;;
                     minor) new_version="v$major.$((minor + 1)).0" ;;
                     patch) new_version="v$major.$minor.$((patch + 1))" ;;
