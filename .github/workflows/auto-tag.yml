@@ -50,6 +50,10 @@ jobs:
               uses: cycjimmy/semantic-release-action@v4
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
               with:
                   semantic_version: 20.1.1
+
+            - name: Debug Output
+              if: always()
+              run: |
+                  echo "Semantic Release Tag: ${{ steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG }}"
