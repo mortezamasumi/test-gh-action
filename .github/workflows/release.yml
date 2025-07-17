@@ -15,6 +15,8 @@ jobs:
 
             - name: Guess version type
               run: |
+                  echo "VERSION_TYPE=update" >> $GITHUB_ENV 
+
                   if echo "${{ github.event.head_commit.message }}" | grep -q "^fix:"; then
                    echo "VERSION_TYPE=patch" >> $GITHUB_ENV                    
                   elif echo "${{ github.event.head_commit.message }}" | grep -q "^feat:"; then
@@ -23,8 +25,6 @@ jobs:
                    echo "VERSION_TYPE=major" >> $GITHUB_ENV                    
                   elif echo "${{ github.event.head_commit.message }}" | grep -q "^BREAKING CHANGE:"; then
                    echo "VERSION_TYPE=major" >> $GITHUB_ENV                    
-                  else
-                    echo "VERSION_TYPE=update" >> $GITHUB_ENV 
                   fi
 
                   echo "version type:${{ env.VERSION_TYPE }}"
