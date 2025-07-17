@@ -30,16 +30,17 @@ jobs:
                   if echo "${{ github.event.head_commit.message }}" | grep -q "^fix:"; then
                    echo "VERSION_TYPE=patch" >> $GITHUB_ENV
                   elif echo "${{ github.event.head_commit.message }}" | grep -q "^feat:"; then
-                   echo "VERSION_TYPE=minor" >> $GITHUB_ENV
-                  elif echo "${{ github.event.head_commit.message }}" | grep -q "^feat!:"; then
-                   echo "VERSION_TYPE=major" >> $GITHUB_ENV
-                  elif echo "${{ github.event.head_commit.message }}" | grep -q "^BREAKING CHANGE:"; then
-                   echo "VERSION_TYPE=major" >> $GITHUB_ENV
+                    VERSION_TYPE=minor
+                  elif ${{ github.event.head_commit.message }}" | grep -q "^feat!:"; then
+                    VERSION_TYPE=major
+                  elif ${{ github.event.head_commit.message }}" | grep -q "^BREAKING CHANGE:"; then
+                    VERSION_TYPE=major
                   else
-                   echo "VERSION_TYPE=update" >> $GITHUB_ENV
+                    VERSION_TYPE=update
                   fi
 
                   echo "version type:$VERSION_TYPE"
+                  echo "VERSION_TYPE=$VERSION_TYPE" >> $GITHUB_ENV
 
             - name: Set up Git
               if: env.VERSION_TYPE != 'update'
