@@ -16,7 +16,7 @@ jobs:
             - name: Guess version type
               run: |
                   if echo "${{ github.event.head_commit.message }}" | grep -q "^fix:"; then
-                   echo "VERSION_TYPE=patch" >> $GITHUB_ENV
+                   VERSION_TYPE=patch
                   elif echo "${{ github.event.head_commit.message }}" | grep -q "^feat:"; then
                     VERSION_TYPE=minor
                   elif ${{ github.event.head_commit.message }}" | grep -q "^feat!:"; then
