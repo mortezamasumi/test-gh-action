@@ -2,7 +2,8 @@ name: run-tests
 
 on:
     push:
-        branches: [main]
+        branches:
+            - main1
 
 jobs:
     test:

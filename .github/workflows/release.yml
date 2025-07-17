@@ -29,6 +29,7 @@ jobs:
                     exit 0
                   fi
                   echo "version type: $VERSION_TYPE"
+                  exit 0
 
             - name: Set up Git
               run: |
