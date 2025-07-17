@@ -25,11 +25,15 @@ jobs:
                     VERSION_TYPE="major"
                   else
                     VERSION_TYPE="update"
-                    echo "version type: $VERSION_TYPE"
-                    exit 0
                   fi
                   echo "version type: $VERSION_TYPE"
-                  exit 0
+
+            - name: Exit early (cleanly)
+              if: env.VERSION_TYPE == 'update'
+              uses: francesco1317/exit-action@v1
+              with:
+                  exit_code: 0
+                  message: "Workflow ended early (no error)"
 
             - name: Set up Git
               run: |
