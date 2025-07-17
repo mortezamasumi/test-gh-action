@@ -1,4 +1,4 @@
-name: Auto Tag on Commit
+name: Semantic Release
 
 on:
     push:
@@ -6,13 +6,34 @@ on:
             - main
 
 jobs:
-    auto-tag:
+    release:
+        name: Release
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  fetch-tags: true
 
-            - name: Auto Tag
-              uses: cycjimmy/semantic-versioning-action@v2
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "lts/*"
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Semantic Release
+              uses: cycjimmy/semantic-release-action@v4
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  semantic_version: 20.1.1
+                  extra_plugins: |
+                      @semantic-release/commit-analyzer
+                      @semantic-release/release-notes-generator
+                      @semantic-release/changelog
+                      @semantic-release/npm
+                      @semantic-release/git
+                      @semantic-release/github
