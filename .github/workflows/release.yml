@@ -19,9 +19,9 @@ jobs:
                    VERSION_TYPE=patch
                   elif echo "${{ github.event.head_commit.message }}" | grep -q "^feat:"; then
                     VERSION_TYPE=minor
-                  elif ${{ github.event.head_commit.message }}" | grep -q "^feat!:"; then
+                  elif echo "${{ github.event.head_commit.message }}" | grep -q '^feat!:'; then
                     VERSION_TYPE=major
-                  elif ${{ github.event.head_commit.message }}" | grep -q "^BREAKING CHANGE:"; then
+                  elif echo "${{ github.event.head_commit.message }}" | grep -q "^BREAKING CHANGE:"; then
                     VERSION_TYPE=major
                   else
                     VERSION_TYPE=update
