@@ -20,6 +20,7 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: "lts/*"
+                  cache: "npm"
 
             - name: Create package.json if not exists
               run: |
@@ -46,15 +47,17 @@ jobs:
                   npm --version
                   node --version
 
+            - name: Debug semantic-release
+              run: npx semantic-release --dry-run
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
             - name: Semantic Release
               uses: cycjimmy/semantic-release-action@v4
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                   semantic_version: 20.1.1
-                  extra_plugins: |
-                      @semantic-release/changelog@6.0.0
-                      @semantic-release/git
 
             - name: Do something when a new release published
               if: steps.semantic.outputs.new_release_published == 'true'
