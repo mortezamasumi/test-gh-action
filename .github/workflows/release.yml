@@ -1,94 +1,17 @@
-name: Auto Tag and Release
+name: Releases
 
 on:
     push:
-        branches:
-            - main
+        tags:
+            - "*"
 
 jobs:
-    tag-and-release:
+    build:
         runs-on: ubuntu-latest
-
+        permissions:
+            contents: write
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-
-            - name: Guess version type
-              run: |
-                  if echo "${{ github.event.head_commit.message }}" | grep -q "^fix:"; then
-                   VERSION_TYPE=patch
-                  elif echo "${{ github.event.head_commit.message }}" | grep -q "^feat:"; then
-                    VERSION_TYPE=minor
-                  elif echo "${{ github.event.head_commit.message }}" | grep -q '^feat!:'; then
-                    VERSION_TYPE=major
-                  elif echo "${{ github.event.head_commit.message }}" | grep -q "^BREAKING CHANGE:"; then
-                    VERSION_TYPE=major
-                  else
-                    VERSION_TYPE=update
-                  fi
-
-                  echo "version type:$VERSION_TYPE"
-                  echo "VERSION_TYPE=$VERSION_TYPE" >> $GITHUB_ENV
-
-            - name: Set up Git
-              if: env.VERSION_TYPE != 'update'
-              run: |
-                  git config user.name "${{ github.actor }}"
-                  git config user.email "${{ github.actor }}@users.noreply.github.com"
-
-            - name: Extract current version
-              if: env.VERSION_TYPE != 'update'
-              id: get_version
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  # Fetch the latest release tag name (handle cases where no releases exist)
-                  current_version=$(gh release view --json tagName -q '.tagName' 2>/dev/null || echo "v0.0.0")
-
-                  # If current_version is empty (no releases), set default
-                  if [ -z "$current_version" ]; then
-                    current_version="v0.0.0"
-                  fi
-
-                  echo "Latest release: $current_version"
-
-                  # Remove 'v' prefix and split version into parts (major, minor, patch)
-                  clean_version="${current_version#v}"
-                  IFS='.' read -r major minor patch <<<"$clean_version"
-
-                  # Ensure version parts are numbers (handle cases where they might not be)
-                  major=$((major + 0))
-                  minor=$((minor + 0))
-                  patch=$((patch + 0))
-
-                  # Increment the version based on the type
-                  case "${{env.VERSION_TYPE}}" in
-                    major) new_version="v$((major + 1)).0.0" ;;
-                    minor) new_version="v$major.$((minor + 1)).0" ;;
-                    patch) new_version="v$major.$minor.$((patch + 1))" ;;
-                  esac
-
-                  echo "New version: $new_version"
-
-                  # Output the new version
-                  echo "new_version=$new_version" >> $GITHUB_ENV
-
-            - name: Create or update tag
-              if: env.VERSION_TYPE != 'update'
-              run: |
-                  git tag -f $new_version
-                  git push origin --force $new_version
-
-            - name: Create or update release
-              if: env.VERSION_TYPE != 'update'
-              uses: actions/create-release@v1
+            - uses: actions/checkout@v4
+            - uses: ncipollo/release-action@v1
               with:
-                  tag_name: ${{ env.new_version }}
-                  release_name: Release ${{ env.new_version }}
-                  body: |
-                      Automatically created release for ${{ env.new_version }}.
-                  draft: false
-                  prerelease: false
-                  overwrite: true
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  generateReleaseNotes: true
