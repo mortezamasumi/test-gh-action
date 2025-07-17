@@ -1,3 +1,10 @@
+## [3.2.1](https://github.com/mortezamasumi/test-gh-action/compare/v3.2.0...v3.2.1) (2025-07-17)
+
+
+### Bug Fixes
+
+* some updates ([e2d69a0](https://github.com/mortezamasumi/test-gh-action/commit/e2d69a0de3cde19cc59abe2b8174f438845db144))
+
 # [3.2.0](https://github.com/mortezamasumi/test-gh-action/compare/v3.1.0...v3.2.0) (2025-07-17)
 
 
