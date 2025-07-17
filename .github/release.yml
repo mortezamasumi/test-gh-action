@@ -3,142 +3,132 @@
 # feat:  minor
 # BREAKING CHANGE: major
 
-name: Release
-
 on:
     push:
         branches: [main]
 
+permissions:
+    contents: write
+    pull-requests: write
+
 jobs:
     release:
-        # if: ${{ github.event.workflow_run.conclusion == 'success' }}
         runs-on: ubuntu-latest
+
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
+
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: "20"
-            - name: Install jq
-              run: sudo apt-get update && sudo apt-get install -y jq
-            - name: Configure Git
-              run: |
-                  git config user.name "GitHub Actions"
-                  git config user.email "actions@github.com"
-            - name: Ensure semantic-release dependencies
-              run: npm install --save-dev @semantic-release/commit-analyzer@^13.0.0 @semantic-release/git@^10.0.0 @semantic-release/github@^10.0.0 @semantic-release/npm@^12.0.0 @semantic-release/release-notes-generator@^14.0.0 @semantic-release/exec@^6.0.0 @semantic-release/changelog@^6.0.0 semantic-release@^24.0.0
+                  node-version: "lts/*"
+
             - name: Semantic Release
-              run: npx semantic-release
-              id: semantic-release
+              uses: cycjimmy/semantic-release-action@v4
+              with:
+                  semantic_version: 20.1.0
+                  extra_plugins: |
+                      conventional-changelog-conventionalcommits
+                      @semantic-release/changelog
+                      @semantic-release/git
+                      @semantic-release/github
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            - name: Debug Output
-              if: always()
+
+            - name: Get latest tag
+              id: get_tag
               run: |
-                  echo "Semantic Release Tag: ${{ steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG }}"
-            - name: Update composer.json version
-              if: steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG != ''
-              run: |
-                  VERSION=${{ steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG }}
-                  VERSION=${VERSION#v} # Remove 'v' prefix
-                  jq --arg version "$VERSION" '.version = $version' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
-                  git add composer.json
-                  git commit -m "chore(release): update composer.json to $VERSION [skip ci]" || echo "No changes to commit"
-                  git push
+                  tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+                  echo "tag=$tag" >> $GITHUB_OUTPUT
+
             - name: Create GitHub Release
-              if: steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG != ''
               uses: softprops/action-gh-release@v1
               with:
-                  name: Release ${{ steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG }}
-                  tag_name: ${{ steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG }}
-                  draft: false
-                  prerelease: false
+                  tag_name: ${{ steps.get_tag.outputs.tag }}
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # - name: Create minimal package.json if not exists
-    #   run: |
-    #       if [ ! -f package.json ]; then
-    #       cat > package.json << 'EOF'
-    #       {
-    #         "name": "semantic-release",
-    #         "version": "0.0.1",
-    #         "private": true
-    #       }
-    #       EOF
-    #       fi
+        # - name: Create minimal package.json if not exists
+        #   run: |
+        #       if [ ! -f package.json ]; then
+        #       cat > package.json << 'EOF'
+        #       {
+        #         "name": "semantic-release",
+        #         "version": "0.0.1",
+        #         "private": true
+        #       }
+        #       EOF
+        #       fi
 
-    # - name: Append release block to package.json
-    #   run: |
-    #       jq '. + {
-    #         "release": {
-    #           "branches": ["main"],
-    #           "tagFormat": "v${version}",
-    #           "plugins": [
-    #             "@semantic-release/commit-analyzer",
-    #             "@semantic-release/release-notes-generator",
-    #             ["@semantic-release/changelog", {
-    #               "changelogFile": "CHANGELOG.md"
-    #             }],
-    #             ["@semantic-release/npm", { "npmPublish": false }],
-    #             ["@semantic-release/git", {
-    #               "assets": ["package.json", "composer.json", "CHANGELOG.md"],
-    #               "message": "chore(release): v${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
-    #             }],
-    #             ["@semantic-release/exec", {
-    #               "publishCmd": "echo SEMANTIC_RELEASE_TAG=v${nextRelease.version} >> $GITHUB_OUTPUT"
-    #             }],
-    #             "@semantic-release/github"
-    #           ]
-    #         }
-    #       }' package.json > package.json.tmp && mv package.json.tmp package.json
+        # - name: Append release block to package.json
+        #   run: |
+        #       jq '. + {
+        #         "release": {
+        #           "branches": ["main"],
+        #           "tagFormat": "v${version}",
+        #           "plugins": [
+        #             "@semantic-release/commit-analyzer",
+        #             "@semantic-release/release-notes-generator",
+        #             ["@semantic-release/changelog", {
+        #               "changelogFile": "CHANGELOG.md"
+        #             }],
+        #             ["@semantic-release/npm", { "npmPublish": false }],
+        #             ["@semantic-release/git", {
+        #               "assets": ["package.json", "composer.json", "CHANGELOG.md"],
+        #               "message": "chore(release): v${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+        #             }],
+        #             ["@semantic-release/exec", {
+        #               "publishCmd": "echo SEMANTIC_RELEASE_TAG=v${nextRelease.version} >> $GITHUB_OUTPUT"
+        #             }],
+        #             "@semantic-release/github"
+        #           ]
+        #         }
+        #       }' package.json > package.json.tmp && mv package.json.tmp package.json
 
-    # - name: Ensure composer.json version field
-    #   run: |
-    #       if [ ! -f composer.json ]; then
-    #         echo '{"name": "test-gh-action", "version": "0.0.0"}' > composer.json
-    #       else
-    #         jq 'if has("version") then . else . + {"version": "0.0.0"} end' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
-    #       fi
+        # - name: Ensure composer.json version field
+        #   run: |
+        #       if [ ! -f composer.json ]; then
+        #         echo '{"name": "test-gh-action", "version": "0.0.0"}' > composer.json
+        #       else
+        #         jq 'if has("version") then . else . + {"version": "0.0.0"} end' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
+        #       fi
 
-    # - name: Delete main tag if exists
-    # env:
-    #     GITHUB_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
-    # run: |
-    #     git fetch origin
-    #     if git tag -l | grep -q '^main$'; then
-    #       git tag -d main
-    #       git push origin :refs/tags/main
-    #     fi
+        # - name: Delete main tag if exists
+        # env:
+        #     GITHUB_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+        # run: |
+        #     git fetch origin
+        #     if git tag -l | grep -q '^main$'; then
+        #       git tag -d main
+        #       git push origin :refs/tags/main
+        #     fi
 
-    #  - name: Install dependencies
-    #   run: npm ci
+        #  - name: Install dependencies
+        #   run: npm ci
 
-    # - name: Debug Files and References
-    #   run: |
-    #       git branch -a
-    #       git tag -l
-    #       git remote -v
-    #       echo "GitHub Ref: ${{ github.ref }}"
-    #       echo "GitHub Ref Name: ${{ github.ref_name }}"
-    #       echo "package.json contents:"
-    #       cat package.json
-    #       echo "composer.json contents:"
-    #       cat composer.json
-    #       echo "CHANGELOG.md contents (if exists):"
-    #       cat CHANGELOG.md || echo "CHANGELOG.md not found"
+        # - name: Debug Files and References
+        #   run: |
+        #       git branch -a
+        #       git tag -l
+        #       git remote -v
+        #       echo "GitHub Ref: ${{ github.ref }}"
+        #       echo "GitHub Ref Name: ${{ github.ref_name }}"
+        #       echo "package.json contents:"
+        #       cat package.json
+        #       echo "composer.json contents:"
+        #       cat composer.json
+        #       echo "CHANGELOG.md contents (if exists):"
+        #       cat CHANGELOG.md || echo "CHANGELOG.md not found"
 
-    # - name: Debug Output
-    #   if: always()
-    #   run: |
-    #       echo "Semantic Release Tag: ${{ steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG }}"
-    #       git tag -l
-    #       echo "package.json after semantic-release:"
-    #       cat package.json
-    #       echo "composer.json after semantic-release:"
-    #       cat composer.json
-    #       echo "CHANGELOG.md after semantic-release:"
-    #       cat CHANGELOG.md || echo "CHANGELOG.md not found"
+        # - name: Debug Output
+        #   if: always()
+        #   run: |
+        #       echo "Semantic Release Tag: ${{ steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG }}"
+        #       git tag -l
+        #       echo "package.json after semantic-release:"
+        #       cat package.json
+        #       echo "composer.json after semantic-release:"
+        #       cat composer.json
+        #       echo "CHANGELOG.md after semantic-release:"
+        #       cat CHANGELOG.md || echo "CHANGELOG.md not found"

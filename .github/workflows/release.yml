@@ -1,134 +1,92 @@
-# semantic-release:
-# fix:  patch
-# feat:  minor
-# BREAKING CHANGE: major
+name: Auto Tag and Release
 
 on:
     push:
-        branches: [main]
-
-permissions:
-    contents: write
-    pull-requests: write
+        branches:
+            - main
 
 jobs:
-    release:
+    tag-and-release:
         runs-on: ubuntu-latest
 
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: "lts/*"
-
-            - name: Semantic Release
-              uses: cycjimmy/semantic-release-action@v4
-              with:
-                  semantic_version: 20.1.0
-                  extra_plugins: |
-                      conventional-changelog-conventionalcommits
-                      @semantic-release/changelog
-                      @semantic-release/git
-                      @semantic-release/github
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-            - name: Get latest tag
-              id: get_tag
+            - name: Guess version type
               run: |
-                  tag=$(git describe --tags `git rev-list --tags --max-count=1`)
-                  echo "tag=$tag" >> $GITHUB_OUTPUT
+                  if echo "${{ github.event.head_commit.message }}" | grep -q "^fix:"; then
+                   VERSION_TYPE="patch"
+                  elif echo "${{ github.event.head_commit.message }}" | grep -q "^feat:"; then
+                    VERSION_TYPE="minor"                     
+                  elif echo "${{ github.event.head_commit.message }}" | grep -q "^feat!:"; then
+                    VERSION_TYPE="major"
+                  elif echo "${{ github.event.head_commit.message }}" | grep -q "^BREAKING CHANGE:"; then
+                    VERSION_TYPE="major"
+                  else
+                    VERSION_TYPE="update"
+                    echo "version type: $VERSION_TYPE"
+                    exit 0
+                  fi
+                  echo "version type: $VERSION_TYPE"
 
-            - name: Create GitHub Release
-              uses: softprops/action-gh-release@v1
-              with:
-                  tag_name: ${{ steps.get_tag.outputs.tag }}
+            - name: Set up Git
+              run: |
+                  git config user.name "${{ github.actor }}"
+                  git config user.email "${{ github.actor }}@users.noreply.github.com"
+
+            - name: Extract current version
+              id: get_version
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  # Fetch the latest release tag name (handle cases where no releases exist)
+                  current_version=$(gh release view --json tagName -q '.tagName' 2>/dev/null || echo "v0.0.0")
 
-        # - name: Create minimal package.json if not exists
-        #   run: |
-        #       if [ ! -f package.json ]; then
-        #       cat > package.json << 'EOF'
-        #       {
-        #         "name": "semantic-release",
-        #         "version": "0.0.1",
-        #         "private": true
-        #       }
-        #       EOF
-        #       fi
+                  # If current_version is empty (no releases), set default
+                  if [ -z "$current_version" ]; then
+                    current_version="v0.0.0"
+                  fi
 
-        # - name: Append release block to package.json
-        #   run: |
-        #       jq '. + {
-        #         "release": {
-        #           "branches": ["main"],
-        #           "tagFormat": "v${version}",
-        #           "plugins": [
-        #             "@semantic-release/commit-analyzer",
-        #             "@semantic-release/release-notes-generator",
-        #             ["@semantic-release/changelog", {
-        #               "changelogFile": "CHANGELOG.md"
-        #             }],
-        #             ["@semantic-release/npm", { "npmPublish": false }],
-        #             ["@semantic-release/git", {
-        #               "assets": ["package.json", "composer.json", "CHANGELOG.md"],
-        #               "message": "chore(release): v${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
-        #             }],
-        #             ["@semantic-release/exec", {
-        #               "publishCmd": "echo SEMANTIC_RELEASE_TAG=v${nextRelease.version} >> $GITHUB_OUTPUT"
-        #             }],
-        #             "@semantic-release/github"
-        #           ]
-        #         }
-        #       }' package.json > package.json.tmp && mv package.json.tmp package.json
+                  echo "Latest release: $current_version"
 
-        # - name: Ensure composer.json version field
-        #   run: |
-        #       if [ ! -f composer.json ]; then
-        #         echo '{"name": "test-gh-action", "version": "0.0.0"}' > composer.json
-        #       else
-        #         jq 'if has("version") then . else . + {"version": "0.0.0"} end' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
-        #       fi
+                  # Remove 'v' prefix and split version into parts (major, minor, patch)
+                  clean_version="${current_version#v}"
+                  IFS='.' read -r major minor patch <<<"$clean_version"
 
-        # - name: Delete main tag if exists
-        # env:
-        #     GITHUB_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
-        # run: |
-        #     git fetch origin
-        #     if git tag -l | grep -q '^main$'; then
-        #       git tag -d main
-        #       git push origin :refs/tags/main
-        #     fi
+                  # Ensure version parts are numbers (handle cases where they might not be)
+                  major=$((major + 0))
+                  minor=$((minor + 0))
+                  patch=$((patch + 0))
 
-        #  - name: Install dependencies
-        #   run: npm ci
 
-        # - name: Debug Files and References
-        #   run: |
-        #       git branch -a
-        #       git tag -l
-        #       git remote -v
-        #       echo "GitHub Ref: ${{ github.ref }}"
-        #       echo "GitHub Ref Name: ${{ github.ref_name }}"
-        #       echo "package.json contents:"
-        #       cat package.json
-        #       echo "composer.json contents:"
-        #       cat composer.json
-        #       echo "CHANGELOG.md contents (if exists):"
-        #       cat CHANGELOG.md || echo "CHANGELOG.md not found"
 
-        # - name: Debug Output
-        #   if: always()
-        #   run: |
-        #       echo "Semantic Release Tag: ${{ steps.semantic-release.outputs.SEMANTIC_RELEASE_TAG }}"
-        #       git tag -l
-        #       echo "package.json after semantic-release:"
-        #       cat package.json
-        #       echo "composer.json after semantic-release:"
-        #       cat composer.json
-        #       echo "CHANGELOG.md after semantic-release:"
-        #       cat CHANGELOG.md || echo "CHANGELOG.md not found"
+                  # Increment the version based on the type
+                  case "$VERSION_TYPE" in
+                    major) new_version="v$((major + 1)).0.0" ;;
+                    minor) new_version="v$major.$((minor + 1)).0" ;;
+                    patch) new_version="v$major.$minor.$((patch + 1))" ;;
+                  esac
+
+                  echo "New version: $new_version"
+
+                  # Output the new version
+                  echo "new_version=$new_version" >> $GITHUB_ENV
+
+            - name: Create or update tag
+              run: |
+                  git tag -f $new_version
+                  git push origin --force $new_version
+
+            - name: Create or update release
+              uses: actions/create-release@v1
+              with:
+                  tag_name: ${{ env.new_version }}
+                  release_name: Release ${{ env.new_version }}
+                  body: |
+                      Automatically created release for ${{ env.new_version }}.
+                  draft: false
+                  prerelease: false
+                  overwrite: true
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
