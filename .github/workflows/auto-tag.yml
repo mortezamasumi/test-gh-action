@@ -40,11 +40,11 @@ jobs:
               env:
                   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-            - name: Debug npm configuration
-              run: |
-                  npm config list
-                  npm --version
-                  node --version
+            # - name: Debug npm configuration
+            #   run: |
+            #       npm config list
+            #       npm --version
+            #       node --version
 
             - name: Debug semantic-release
               run: npx semantic-release --dry-run
