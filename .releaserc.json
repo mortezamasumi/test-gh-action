@@ -1,0 +1,15 @@
+{
+    "plugins": [
+        [
+            "@semantic-release/commit-analyzer",
+            {
+                "preset": "angular",
+                "releaseRules": [
+                    { "type": "feat!", "release": "major" },
+                    { "type": "feat", "release": "minor" },
+                    { "type": "fix", "release": "patch" }
+                ]
+            }
+        ]
+    ]
+}
