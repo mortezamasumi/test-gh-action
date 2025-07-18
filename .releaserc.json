@@ -7,9 +7,13 @@
                 "releaseRules": [
                     { "type": "feat!", "release": "major" },
                     { "type": "feat", "release": "minor" },
-                    { "type": "fix", "release": "patch" }
+                    { "type": "fix", "release": "patch" },
+                    { "breaking": true, "release": "major" }
                 ]
             }
-        ]
+        ],
+        "@semantic-release/release-notes-generator",
+        "@semantic-release/git",
+        "@semantic-release/github"
     ]
 }
