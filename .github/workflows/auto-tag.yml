@@ -30,7 +30,7 @@ jobs:
             - name: Create package.json if not exists
               run: |
                   if [ ! -f .releaserc.json ]; then
-                    cat << 'EOF' > .releaserc.json
+                    cat > .releaserc.json << EOF
                     {
                       "release": {
                         "plugins": [
