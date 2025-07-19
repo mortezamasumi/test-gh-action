@@ -30,7 +30,7 @@ jobs:
             - name: Create package.json if not exists
               run: |
                   if [ ! -f .releaserc.json ]; then
-                    echo <<<JSON
+                    echo << 'JSON'
                     {
                       "release": {
                         "plugins": [
@@ -45,8 +45,7 @@ jobs:
                         ]
                       }
                     }
-                    JSON
-                    > .releaserc.json
+                    JSON > .releaserc.json
                   fi
 
             - name: Install dependencies
