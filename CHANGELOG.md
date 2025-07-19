@@ -1,3 +1,5 @@
+# [6.0.0](https://github.com/mortezamasumi/test-gh-action/compare/v5.0.0...v6.0.0) (2025-07-19)
+
 # [5.0.0](https://github.com/mortezamasumi/test-gh-action/compare/v4.0.1...v5.0.0) (2025-07-19)
 
 ## [4.0.1](https://github.com/mortezamasumi/test-gh-action/compare/v4.0.0...v4.0.1) (2025-07-19)
