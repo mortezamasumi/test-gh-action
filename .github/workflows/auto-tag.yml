@@ -27,26 +27,36 @@ jobs:
                     echo '{"name": "project", "version": "1.0.0", "private": true}' > package.json
                   fi
 
-            # - name: Create package.json if not exists
-            #   run: |
-            #       if [ ! -f .releaserc.json ]; then
-            #       cat > .releaserc.json << 'EOF'
-            #       {
-            #         "release": {
-            #           "plugins": [
-            #             ["@semantic-release/commit-analyzer", {
-            #               "preset": "conventionalcommits",
-            #               "releaseRules": [
-            #                 {"type": "feat", "release": "minor"},
-            #                 {"type": "feat!", "release": "major"},
-            #                 {"type": "fix", "release": "patch"}
-            #               ]
-            #             }]
-            #           ]
-            #         }
-            #       }
-            #       EOF
-            #       fi
+            - name: Create .releaserc.json
+              run: |
+                  cat > .releaserc.json << 'EOF'
+                  {
+                    "branches": ["main"],
+                    "plugins": [
+                      [
+                        "@semantic-release/commit-analyzer",
+                        {
+                          "preset": "conventionalcommits",
+                          "releaseRules": [
+                            { "type": "feat", "release": "minor" },
+                            { "type": "fix", "release": "patch" },
+                            { "breaking": true, "release": "major" }
+                          ]
+                        }
+                      ],
+                      "@semantic-release/release-notes-generator",
+                      "@semantic-release/changelog",
+                      [
+                        "@semantic-release/git",
+                        {
+                          "assets": ["CHANGELOG.md"],
+                          "message": "chore(release): ${nextRelease.version} [skip ci]"
+                        }
+                      ],
+                      "@semantic-release/github"
+                    ]
+                  }
+                  EOF
 
             - name: Install dependencies
               run: |
