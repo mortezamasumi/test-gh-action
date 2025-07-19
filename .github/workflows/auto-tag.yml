@@ -27,26 +27,26 @@ jobs:
                     echo '{"name": "project", "version": "1.0.0", "private": true}' > package.json
                   fi
 
-            - name: Create package.json if not exists
-              run: |
-                  if [ ! -f .releaserc.json ]; then
-                  cat > .releaserc.json << 'EOF'
-                  {
-                    "release": {
-                      "plugins": [
-                        ["@semantic-release/commit-analyzer", {
-                          "preset": "conventionalcommits",
-                          "releaseRules": [
-                            {"type": "feat", "release": "minor"},
-                            {"type": "feat!", "release": "major"},
-                            {"type": "fix", "release": "patch"}
-                          ]
-                        }]
-                      ]
-                    }
-                  }
-                  EOF 
-                  fi
+            # - name: Create package.json if not exists
+            #   run: |
+            #       if [ ! -f .releaserc.json ]; then
+            #       cat > .releaserc.json << 'EOF'
+            #       {
+            #         "release": {
+            #           "plugins": [
+            #             ["@semantic-release/commit-analyzer", {
+            #               "preset": "conventionalcommits",
+            #               "releaseRules": [
+            #                 {"type": "feat", "release": "minor"},
+            #                 {"type": "feat!", "release": "major"},
+            #                 {"type": "fix", "release": "patch"}
+            #               ]
+            #             }]
+            #           ]
+            #         }
+            #       }
+            #       EOF
+            #       fi
 
             - name: Install dependencies
               run: |
