@@ -1,3 +1,15 @@
+# [12.0.0](https://github.com/mortezamasumi/test-gh-action/compare/v11.0.0...v12.0.0) (2025-07-19)
+
+
+### Bug Fixes
+
+* drop Laravel 9 support ([d1330ad](https://github.com/mortezamasumi/test-gh-action/commit/d1330adacf0f0b39b9571213318d4c30a02d9e46))
+
+
+### BREAKING CHANGES
+
+* Laravel 9 is no longer compatible.
+
 # [11.0.0](https://github.com/mortezamasumi/test-gh-action/compare/v10.0.0...v11.0.0) (2025-07-19)
 
 
