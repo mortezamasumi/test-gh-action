@@ -45,7 +45,8 @@ jobs:
                         ]
                       }
                     }
-                    EOF > .releaserc.json
+                    EOF 
+                    > .releaserc.json
                   fi
 
             - name: Install dependencies
