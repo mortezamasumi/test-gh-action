@@ -27,6 +27,28 @@ jobs:
                     echo '{"name": "project", "version": "1.0.0", "private": true}' > package.json
                   fi
 
+            - name: Create package.json if not exists
+              run: |
+                  if [ ! -f .releaserc.json ]; then
+                    echo <<<JSON
+                    {
+                      "release": {
+                        "plugins": [
+                          ["@semantic-release/commit-analyzer", {
+                            "preset": "conventionalcommits",
+                            "releaseRules": [
+                              {"type": "feat", "release": "minor"},
+                              {"type": "feat!", "release": "major"},
+                              {"type": "fix", "release": "patch"}
+                            ]
+                          }]
+                        ]
+                      }
+                    }
+                    JSON
+                    > .releaserc.json
+                  fi
+
             - name: Install dependencies
               run: |
                   npm install --no-audit --silent \
@@ -51,12 +73,12 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Semantic Release
-              uses: cycjimmy/semantic-release-action@v4
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              # with:
-              #     semantic_version: 20.1.1
+            # - name: Semantic Release
+            #   uses: cycjimmy/semantic-release-action@v4
+            #   env:
+            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            # with:
+            #     semantic_version: 20.1.1
 
             # - name: Do something when a new release published
             #   if: steps.semantic.outputs.new_release_published == 'true'
