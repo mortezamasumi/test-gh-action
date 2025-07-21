@@ -72,23 +72,13 @@ jobs:
               env:
                   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-            # - name: Debug npm configuration
-            #   run: |
-            #       npm config list
-            #       npm --version
-            #       node --version
-
             - name: Find releasing version
-              id: semantic
               run: |
                   npx semantic-release --dry-run > output.log
-                  echo "Semantic Release Output:"
-                  cat output.log
                   NEW_VERSION=$(grep -oP 'Published release \K[0-9]+\.[0-9]+\.[0-9]+' output.log)
                   echo "New version releasing: $NEW_VERSION"
                   jq ".version = \"$NEW_VERSION\"" composer.json > composer.json.tmp && mv composer.json.tmp composer.json
                   git add composer.json
-
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -96,13 +86,3 @@ jobs:
               uses: cycjimmy/semantic-release-action@v4
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            # with:
-            #     semantic_version: 20.1.1
-
-            # - name: Do something when a new release published
-            #   # if: steps.semantic.outputs.new_release_published == 'true'
-            #   run: |
-            #       echo ${{ steps.semantic.outputs.new_release_version }}
-            #       echo ${{ steps.semantic.outputs.new_release_major_version }}
-            #       echo ${{ steps.semantic.outputs.new_release_minor_version }}
-            #       echo ${{ steps.semantic.outputs.new_release_patch_version }}
