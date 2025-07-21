@@ -26,7 +26,7 @@ jobs:
                   echo "has_package=1" >> $GITHUB_OUTPUT
                   if [ ! -f package.json ]; then
                     echo '{"name": "project", "version": "1.0.0", "private": true}' > package.json
-                    echo "has_package=0" >> $GITHUB_OUTPUT
+                    echo "has_package=" >> $GITHUB_OUTPUT
                   fi
 
             - name: Create .releaserc.json
@@ -83,7 +83,7 @@ jobs:
                   jq ".version = \"$NEW_VERSION\"" composer.json > composer.json.tmp && mv composer.json.tmp composer.json
                   jq ".version = \"$NEW_VERSION\"" package.json > package.json.tmp && mv package.json.tmp package.json
                   git add composer.json
-                  if [ ${{ steps.package.outputs.has_package }} = 1 ];
+                  if [ -n "${{ steps.package.outputs.has_package }}" ];
                     git add package.json
                   fi
               env:
