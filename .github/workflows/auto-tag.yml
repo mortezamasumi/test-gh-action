@@ -50,7 +50,7 @@ jobs:
                       [
                         "@semantic-release/git",
                         {
-                          "assets": ["CHANGELOG.md"],
+                          "assets": ["composer.json", "CHANGELOG.md"],
                           "message": "chore(release): ${nextRelease.version} [skip ci]"
                         }
                       ],
