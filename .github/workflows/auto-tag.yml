@@ -21,9 +21,12 @@ jobs:
                   node-version: "lts/*"
 
             - name: Create package.json if not exists
+              id: package
               run: |
+                  echo "has_package=1" >> $GITHUB_OUTPUT
                   if [ ! -f package.json ]; then
                     echo '{"name": "project", "version": "1.0.0", "private": true}' > package.json
+                    echo "has_package=0" >> $GITHUB_OUTPUT
                   fi
 
             - name: Create .releaserc.json
@@ -80,7 +83,9 @@ jobs:
                   jq ".version = \"$NEW_VERSION\"" composer.json > composer.json.tmp && mv composer.json.tmp composer.json
                   jq ".version = \"$NEW_VERSION\"" package.json > package.json.tmp && mv package.json.tmp package.json
                   git add composer.json
-                  # git add package.json
+                  if [ ${{ steps.package.outputs.has_package }} = 1 ];
+                    git add package.json
+                  fi
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
