@@ -48,6 +48,12 @@ jobs:
                       "@semantic-release/release-notes-generator",
                       "@semantic-release/changelog",
                       [
+                        "@semantic-release/exec",
+                        {
+                          "prepareCmd": "./.github/scripts/update-composer-version.sh ${nextRelease.version}"
+                        }
+                      ],
+                      [
                         "@semantic-release/git",
                         {
                           "assets": ["composer.json", "CHANGELOG.md"],
