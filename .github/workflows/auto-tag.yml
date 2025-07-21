@@ -78,10 +78,15 @@ jobs:
             #       npm --version
             #       node --version
 
-            # - name: Debug semantic-release
-            #   run: npx semantic-release --dry-run
-            #   env:
-            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Debug semantic-release
+              run: |
+                  npx semantic-release --dry-run > output.log
+                  echo "Semantic Release Output:"
+                  cat output.log
+                  VERSION=$(grep -oP 'Published release \Kv[0-9]+\.[0-9]+\.[0-9]+' output.log)
+                  echo "new_release_version=$VERSION" >> $GITHUB_OUTPUT
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Semantic Release
               uses: cycjimmy/semantic-release-action@v4
