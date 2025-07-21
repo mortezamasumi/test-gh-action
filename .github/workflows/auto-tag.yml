@@ -80,7 +80,7 @@ jobs:
                   jq ".version = \"$NEW_VERSION\"" composer.json > composer.json.tmp && mv composer.json.tmp composer.json
                   jq ".version = \"$NEW_VERSION\"" package.json > package.json.tmp && mv package.json.tmp package.json
                   git add composer.json
-                  git add package.json
+                  # git add package.json
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
