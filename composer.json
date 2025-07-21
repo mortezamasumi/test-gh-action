@@ -3,6 +3,7 @@
     "description": "copy db tables",
     "type": "library",
     "license": "MIT",
+    "version": "12.0.2",
     "authors": [
         {
             "name": "Morteza Masumi",
