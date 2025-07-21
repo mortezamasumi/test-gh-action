@@ -78,7 +78,8 @@ jobs:
             #       npm --version
             #       node --version
 
-            - name: Debug semantic-release
+            - name: Find released version
+              id: semantic
               run: |
                   npx semantic-release --dry-run > output.log
                   echo "Semantic Release Output:"
