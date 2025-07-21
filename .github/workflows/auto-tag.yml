@@ -83,7 +83,7 @@ jobs:
                   jq ".version = \"$NEW_VERSION\"" composer.json > composer.json.tmp && mv composer.json.tmp composer.json
                   jq ".version = \"$NEW_VERSION\"" package.json > package.json.tmp && mv package.json.tmp package.json
                   git add composer.json
-                  if [ -n "${{ steps.package.outputs.has_package }}" ];
+                  if [ -n "${{ steps.package.outputs.has_package }}" ]; then
                     git add package.json
                   fi
               env:
