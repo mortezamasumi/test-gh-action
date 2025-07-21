@@ -67,20 +67,21 @@ jobs:
                     @semantic-release/release-notes-generator \
                     @semantic-release/changelog \
                     @semantic-release/git \
+                    @semantic-release/exec \
                     @semantic-release/github \
                     conventional-changelog-conventionalcommits
               env:
                   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-            - name: Find releasing version
-              run: |
-                  npx semantic-release --dry-run > output.log
-                  NEW_VERSION=$(grep -oP 'Published release \K[0-9]+\.[0-9]+\.[0-9]+' output.log)
-                  echo "New version releasing: $NEW_VERSION"
-                  jq ".version = \"$NEW_VERSION\"" composer.json > composer.json.tmp && mv composer.json.tmp composer.json
-                  git add composer.json
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            # - name: Find releasing version
+            #   run: |
+            #       npx semantic-release --dry-run > output.log
+            #       NEW_VERSION=$(grep -oP 'Published release \K[0-9]+\.[0-9]+\.[0-9]+' output.log)
+            #       echo "New version releasing: $NEW_VERSION"
+            #       jq ".version = \"$NEW_VERSION\"" composer.json > composer.json.tmp && mv composer.json.tmp composer.json
+            #       git add composer.json
+            #   env:
+            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Semantic Release
               uses: cycjimmy/semantic-release-action@v4
