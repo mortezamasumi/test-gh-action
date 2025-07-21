@@ -1,3 +1,10 @@
+## [12.0.8](https://github.com/mortezamasumi/test-gh-action/compare/v12.0.7...v12.0.8) (2025-07-21)
+
+
+### Bug Fixes
+
+* some6 ([e32ef31](https://github.com/mortezamasumi/test-gh-action/commit/e32ef31e30695e99cbae7ac49e22a94aaf4fcead))
+
 ## [12.0.7](https://github.com/mortezamasumi/test-gh-action/compare/v12.0.6...v12.0.7) (2025-07-21)
 
 
