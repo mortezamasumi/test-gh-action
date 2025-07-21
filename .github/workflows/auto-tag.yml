@@ -78,7 +78,7 @@ jobs:
             #       npm --version
             #       node --version
 
-            - name: Find released version
+            - name: Find releasing version
               id: semantic
               run: |
                   npx semantic-release --dry-run > output.log
