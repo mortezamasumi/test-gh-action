@@ -9,7 +9,7 @@
             "email": "morteza.masumi@gmail.com"
         }
     ],
-    "minimum-stability": "beta",
+    "minimum-stability": "stable",
     "require": {
         "php": "^8.2",
         "laravel/framework": "^12.0"
