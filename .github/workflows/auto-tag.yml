@@ -50,27 +50,7 @@ jobs:
                         }
                       ],
                       "@semantic-release/release-notes-generator",
-                      "@semantic-release/changelog",
-                      [
-                        "@semantic-release/git",
-                        {
-                          "assets": ["composer.json","CHANGELOG.md"],
-                          "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
-                        }
-                      ],
-                      [
-                        "@semantic-release/exec",
-                        {
-                          "prepareCmd": "jq --arg version ${nextRelease.version} '.version = $version' composer.json > composer.json.tmp && mv composer.json.tmp composer.json"
-                        }
-                      ],
-                      [
-                        "@semantic-release/github",
-                        {
-                          "successComment": false,
-                          "failComment": false
-                        }
-                      ]
+                      "@semantic-release/github",
                     ]
                   }
                   EOF
@@ -111,3 +91,18 @@ jobs:
             #   uses: cycjimmy/semantic-release-action@v4
             #   env:
             #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#  "@semantic-release/changelog",
+#                       [
+#                         "@semantic-release/git",
+#                         {
+#                           "assets": ["composer.json","CHANGELOG.md"],
+#                           "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+#                         }
+#                       ],
+
+# [
+#   "@semantic-release/exec",
+#   {
+#     "prepareCmd": "jq --arg version ${nextRelease.version} '.version = $version' composer.json > composer.json.tmp && mv composer.json.tmp composer.json"
+#   }
+# ],
