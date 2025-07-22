@@ -3,6 +3,9 @@ name: Run on New Release
 on:
     release:
         types: [published] # Triggers when a release is published
+    workflow_run:
+        workflows: ["Release"] # Name of your semantic-release workflow
+        types: [completed]
 
 jobs:
     celebrate:
