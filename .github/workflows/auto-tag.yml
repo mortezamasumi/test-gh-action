@@ -31,30 +31,30 @@ jobs:
                     echo "has_package=" >> $GITHUB_OUTPUT
                   fi
 
-            - name: Create .releaserc.json
-              run: |
-                  if [ ! -f .releaserc.json ]; then
-                  cat > .releaserc.json << 'EOF'
-                  {
-                    "branches": ["main","next"],
-                    "plugins": [
-                      [
-                        "@semantic-release/commit-analyzer",
-                        {
-                          "preset": "conventionalcommits",
-                          "releaseRules": [
-                            { "type": "feat", "release": "minor" },
-                            { "type": "fix", "release": "patch" },
-                            { "breaking": true, "release": "major" }
-                          ]
-                        }
-                      ],
-                      "@semantic-release/release-notes-generator",
-                      "@semantic-release/github"
-                    ]
-                  }
-                  EOF
-                  fi
+            # - name: Create .releaserc.json
+            #   run: |
+            #       if [ ! -f .releaserc.json ]; then
+            #       cat > .releaserc.json << 'EOF'
+            #       {
+            #         "branches": ["main","next"],
+            #         "plugins": [
+            #           [
+            #             "@semantic-release/commit-analyzer",
+            #             {
+            #               "preset": "conventionalcommits",
+            #               "releaseRules": [
+            #                 { "type": "feat", "release": "minor" },
+            #                 { "type": "fix", "release": "patch" },
+            #                 { "breaking": true, "release": "major" }
+            #               ]
+            #             }
+            #           ],
+            #           "@semantic-release/release-notes-generator",
+            #           "@semantic-release/github"
+            #         ]
+            #       }
+            #       EOF
+            #       fi
 
             - name: Install dependencies
               run: |
@@ -69,7 +69,7 @@ jobs:
               env:
                   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
             - name: Run semantic-release
-              run: npx semantic-release
+              run: npx semantic-release --branches main,next --extends @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/github
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
