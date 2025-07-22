@@ -4,6 +4,15 @@
 ### Bug Fixes
 
 * main-fix-1 ([d4550de](https://github.com/mortezamasumi/test-gh-action/commit/d4550def11cbee77be5300ebb80e3f236d4abb19))
+* main-fix-2 ([366c53a](https://github.com/mortezamasumi/test-gh-action/commit/366c53a8fd69ebc80ef878a01aa46e4b4f5d6a2f))
+* main-fix-3 ([34f9e9c](https://github.com/mortezamasumi/test-gh-action/commit/34f9e9c6bb899fdd5d0eff2ae739cdc536ff761f))
+
+## [12.0.15](https://github.com/mortezamasumi/test-gh-action/compare/v12.0.14...v12.0.15) (2025-07-22)
+
+
+### Bug Fixes
+
+* main-fix-1 ([d4550de](https://github.com/mortezamasumi/test-gh-action/commit/d4550def11cbee77be5300ebb80e3f236d4abb19))
 
 ## [12.0.14](https://github.com/mortezamasumi/test-gh-action/compare/v12.0.13...v12.0.14) (2025-07-21)
 
