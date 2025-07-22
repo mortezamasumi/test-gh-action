@@ -3,8 +3,6 @@ name: Release
 on:
     push:
         branches: [main, next]
-    pull_request:
-        branches: [main, next]
 
 jobs:
     release:
@@ -22,14 +20,42 @@ jobs:
               with:
                   node-version: "lts/*"
 
-            - name: Create package.json if not exists
-              id: package
+            - name: Install dependencies
               run: |
-                  echo "has_package=true" >> $GITHUB_OUTPUT
                   if [ ! -f package.json ]; then
                     echo '{"name": "project", "version": "1.0.0", "private": true}' > package.json
-                    echo "has_package=" >> $GITHUB_OUTPUT
                   fi
+                  npm install --no-audit --silent \
+                    @semantic-release/commit-analyzer \
+                    @semantic-release/release-notes-generator \
+                    @semantic-release/github \
+                    conventional-changelog-conventionalcommits
+              env:
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+            - name: Run semantic-release
+              run: npx semantic-release --branches main,next --extends @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/github
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            # - name: Find releasing version
+            #   run: |
+            #       npx semantic-release --dry-run > output.log
+            #       NEW_VERSION=$(grep -oP 'Published release \K[0-9]+\.[0-9]+\.[0-9]+' output.log)
+            #       echo "New version releasing: $NEW_VERSION"
+            #       jq ".version = \"$NEW_VERSION\"" composer.json > composer.json.tmp && mv composer.json.tmp composer.json
+            #       jq ".version = \"$NEW_VERSION\"" package.json > package.json.tmp && mv package.json.tmp package.json
+            #       git add composer.json
+            #       if [ -n "${{ steps.package.outputs.has_package }}" ]; then
+            #         git add package.json
+            #       fi
+            #   env:
+            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            # - name: Semantic Release
+            #   uses: cycjimmy/semantic-release-action@v4
+            #   env:
+            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             # - name: Create .releaserc.json
             #   run: |
@@ -56,41 +82,30 @@ jobs:
             #       EOF
             #       fi
 
-            - name: Install dependencies
-              run: |
-                  npm install --no-audit --silent \
-                    @semantic-release/commit-analyzer \
-                    @semantic-release/release-notes-generator \
-                    @semantic-release/changelog \
-                    @semantic-release/git \
-                    @semantic-release/exec \
-                    @semantic-release/github \
-                    conventional-changelog-conventionalcommits
-              env:
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-            - name: Run semantic-release
-              run: npx semantic-release --branches main,next --extends @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/github
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-            # - name: Find releasing version
+            # - name: Create package.json if not exists
+            #   id: package
             #   run: |
-            #       npx semantic-release --dry-run > output.log
-            #       NEW_VERSION=$(grep -oP 'Published release \K[0-9]+\.[0-9]+\.[0-9]+' output.log)
-            #       echo "New version releasing: $NEW_VERSION"
-            #       jq ".version = \"$NEW_VERSION\"" composer.json > composer.json.tmp && mv composer.json.tmp composer.json
-            #       jq ".version = \"$NEW_VERSION\"" package.json > package.json.tmp && mv package.json.tmp package.json
-            #       git add composer.json
-            #       if [ -n "${{ steps.package.outputs.has_package }}" ]; then
-            #         git add package.json
+            #       echo "has_package=true" >> $GITHUB_OUTPUT
+            #       if [ ! -f package.json ]; then
+            #         echo '{"name": "project", "version": "1.0.0", "private": true}' > package.json
+            #         echo "has_package=" >> $GITHUB_OUTPUT
             #       fi
-            #   env:
-            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            # - name: Semantic Release
-            #   uses: cycjimmy/semantic-release-action@v4
-            #   env:
-            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            #           - name: Install dependencies
+            # run: |
+            #     if [ ! -f package.json ]; then
+            #       echo '{"name": "project", "version": "1.0.0", "private": true}' > package.json
+            #     fi
+            #     npm install --no-audit --silent \
+            #       @semantic-release/commit-analyzer \
+            #       @semantic-release/release-notes-generator \
+            #       @semantic-release/changelog \
+            #       @semantic-release/git \
+            #       @semantic-release/exec \
+            #       @semantic-release/github \
+            #       conventional-changelog-conventionalcommits
+            # env:
+            #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 #  "@semantic-release/changelog",
 #                       [
 #                         "@semantic-release/git",
