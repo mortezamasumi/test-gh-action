@@ -1,0 +1,14 @@
+name: Run on New Release
+
+on:
+    release:
+        types: [published] # Triggers when a release is published
+
+jobs:
+    celebrate:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Print release info
+              run: |
+                  echo "New release ${{ github.event.release.tag_name }} was published!"
+                  echo "Release notes: ${{ github.event.release.body }}"
