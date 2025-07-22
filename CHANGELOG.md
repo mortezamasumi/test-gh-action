@@ -1,3 +1,15 @@
+# [13.0.0](https://github.com/mortezamasumi/test-gh-action/compare/v12.0.15...v13.0.0) (2025-07-22)
+
+
+### Features
+
+* next ([c6858aa](https://github.com/mortezamasumi/test-gh-action/commit/c6858aafb78e18f987d6b6d377a13b66ccb8ef8a))
+
+
+### BREAKING CHANGES
+
+* next version
+
 ## [12.0.15](https://github.com/mortezamasumi/test-gh-action/compare/v12.0.14...v12.0.15) (2025-07-22)
 
 
