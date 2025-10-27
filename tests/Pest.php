@@ -1,2 +1,5 @@
 <?php
-pest()->extend(Tests\TestCase::class)->in('Feature');
+
+use Mortezamasumi\TestGhAction\Tests\TestCase;
+
+uses(TestCase::class)->in(__DIR__);
